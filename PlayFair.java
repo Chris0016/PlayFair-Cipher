@@ -10,7 +10,7 @@ public class PlayFair{
 	private String plaintext;
 	private String key;
 	private String alphabet;
-	private String[] table;
+	private String[][] table;
 	
 	private int kLength;
 	private int pTextLength;
@@ -30,7 +30,8 @@ public class PlayFair{
 
 		alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-		table = (isValidKey(key, kLength))? createTable() : null;
+		table = new String[LENGTH][WIDTH];
+		createTable();
 	}
 
 	public void encrypt(){		
@@ -92,18 +93,14 @@ public class PlayFair{
 			
 			//Calculate the position of b and c based on their respective coordinates
 
-			bPos = coordToPos(b);
-			cPos = coordToPos(c);
+			letter1 = table[b.getY()][b.getX()];
+			letter2 = table[c.getY()][c.getX()];
 
-			letter1 = table[bPos - 1];
-			letter2 = table[cPos - 1];
-
-			System.out.println("Poistion Calculated for B : " + bPos);
-			System.out.println("Letter at " + bPos + ": " + letter1 );
+			
+			System.out.println("Letter at B : " + letter1 );
 			System.out.println("Coordinates of B : " + "(" + b.getX() + ", " + b.getY() + ")");
 
-			System.out.println("\nPoistion Calculated for C : " + cPos);
-			System.out.println("Letter at " + cPos + ": " + letter2);
+			System.out.println("Letter at C: " + letter2);
 			System.out.println("Coordinates of C : " + "(" + c.getX() + ", " + c.getY() + ")" + "\n\n");
 			//append letters, based on their pos value in the table, to encrypt String
 			
@@ -184,11 +181,16 @@ public class PlayFair{
 	}
 
 
-
+	//To Delete
 	private int coordToPos(Coordinates coordinate){
 		return (WIDTH * (coordinate.getY() - 1)) + coordinate.getX();
+
 	}
 	
+
+
+	//To Delete
+	/*
 	private Coordinates toCoordinates(char letter){
 		int pos = letter - 64; 
 
@@ -202,11 +204,21 @@ public class PlayFair{
 
 		return new Coordinates(x, y);	
 	}
+	*/
 
+
+	private Coordinates toCoordinates(char letter){
+		
+		for(int y = 0; y <  LENGTH; y++)
+			for(int x = 0; x < WIDTH; x++)
+				if(table[y][x].equals(Character.toString(letter)))
+					return new Coordinates(x, y);
+		return new Coordinates(-1, -1);
+	}
 
 	//A custom ceiling and floor function based on a given "floor/ceiling" the stepNum
 	// e.g. ceiling(3, 5) -> 5  ceiling(32, 5)  -> 35 
-	// e.g. floo(3, 5) -> 0 	floor(32, 5) 	-> 30
+	// e.g. floor(3, 5) -> 0 	floor(32, 5) 	-> 30
 	private int ceiling(int num, int stepNum){
 		if (num <= 5)
 			return 1;
@@ -220,16 +232,23 @@ public class PlayFair{
 	}
 
 	
-	private String[] createTable(){
+	//Rename this method to something more appropriate
+	private void createTable(){
 		String alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
 		alphabet = alphabet.replaceAll("["+ key +"]", "");
 		alphabet =  key + alphabet;
 
-		return toArray(alphabet);
+		populateTable(alphabet);
 	}
 
-
-
+	private void populateTable(String text){
+		int count = 0;
+		for(int i = 0; i < LENGTH; i++)
+			for (int j = 0; j < WIDTH; j++){
+				this.table[i][j] = Character.toString(text.charAt(count));
+				count++;
+			}
+	}
 
 
 //--------- Setters and Getters ---------------------
@@ -262,15 +281,7 @@ public class PlayFair{
 
 //--------- General Methods ---------------------
 
-	private String[] toArray(String text){
-		int size = text.length();
-		String[] arr = new String[size];
-
-		for(int i = 0; i < size; i++)
-			arr[i] = text.substring(i , i+1);
-		
-		return arr;
-	}
+	
 
 	private boolean isEven(int num){
 		return (num % 2 == 0 && num != 1);

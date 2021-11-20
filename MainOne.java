@@ -2,9 +2,30 @@
 public class MainOne{
 
 	public static void main(String[] args){
-		String plaintext = "AB";
-		String key = "ABCDEE";
-		
+		String plaintext = "SECRETMESSAGE";
+		String key = "KEYWORD";
+		/*
+		//Create Table
+		String[][] table = new String[5][5];
+		String alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+		alphabet = alphabet.replaceAll("["+ key +"]", "");
+		alphabet =  key + alphabet;
+
+		int count = 0;
+		for(int i = 0; i < 5; i++)
+			for (int j = 0; j < 5; j++){
+				table[i][j] = Character.toString(alphabet.charAt(count));
+				count++;
+			}
+		//Create Table
+
+
+		printTable(table);
+		char letter = 'A';
+		printCoordinates(letter, table);//Remember coordinates are 0-based index
+		System.out.println("Finished");
+		*/
+
 
 		PlayFair algo = new PlayFair(plaintext, key);
 		algo.encrypt();
@@ -30,21 +51,18 @@ public class MainOne{
 
 		//System.out.println("Test Char Position: " + getPos('B'));
 	}
+	static void printCoordinates(char letter, String[][] table){
+		for(int y = 0; y <  5; y++)
+			for(int x = 0; x < 5; x++)
+				if(table[y][x].equals(Character.toString(letter)))
+					System.out.println("Coordinates: " + x + ", " + y);
+	}
 
-	static void toCoordinates(char letter){
-		int pos = letter - 64; 
-
-		pos = (pos >= 10)? (pos - 1) : pos; //No J in PlayFair so Shift letters over one spot to the left
-		
-		int x = pos - floor(pos, 5);
-		x = (x == 0)? 5 : x;
-
-		int y = ceiling(pos, 5);
-		y = (y % 5 == 0 && y > 5)? y/5 : y;
-
-		System.out.println("Letter :" + letter);
-		System.out.println("X: " + x);
-		System.out.println("Y: " + y);	
+	static void printTable(String[][] table){
+		for(int y = 0; y <  5; y++)
+			for(int x = 0; x < 5; x++)
+					System.out.print(table[y][x] + " ");
+		System.out.println();
 	}
 
 	static int ceiling(int num, int stepNum){
