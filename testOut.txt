@@ -1,0 +1,8 @@
+EV
+Poistion Calculated for B : 1
+Letter at 1: A
+
+Poistion Calculated for C : 25
+Letter at 25: Z
+
+
