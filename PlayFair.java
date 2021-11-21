@@ -8,6 +8,7 @@ public class PlayFair{
 	final int WIDTH  = 5;
 
 	private String plaintext;
+	private String encryptedText;
 	private String key;
 	private String alphabet;
 	private String[][] table;
@@ -35,6 +36,8 @@ public class PlayFair{
 	}
 
 	public void encrypt(){		
+		encryptedText = "";
+
 
 		char char1, char2;
 		Coordinates a, b, c, d; 
@@ -74,13 +77,13 @@ public class PlayFair{
 			//Edge Case: If same row
 			if(y1 == y2){
 
-				b = new Coordinates(x1 + 1, y1);
+				b = new Coordinates((x1 + 1) % WIDTH, y1);
 				c = new Coordinates((x2 + 1) % WIDTH, y2);
 
 			}
 			//Edge Case: If same column
 			else if(x1 == x2){
-				b = new Coordinates(x1, y1 + 1);
+				b = new Coordinates(x1, (y1 + 1) % LENGTH);
 				c = new Coordinates(x1, (y2 + 1) % LENGTH);
 			}
 			else{
@@ -96,15 +99,15 @@ public class PlayFair{
 			letter1 = table[b.getY()][b.getX()];
 			letter2 = table[c.getY()][c.getX()];
 
-			
 			System.out.println("Letter at B : " + letter1 );
 			System.out.println("Coordinates of B : " + "(" + b.getX() + ", " + b.getY() + ")");
 
 			System.out.println("Letter at C: " + letter2);
 			System.out.println("Coordinates of C : " + "(" + c.getX() + ", " + c.getY() + ")" + "\n\n");
-			//append letters, based on their pos value in the table, to encrypt String
+			//append letters, based on their pos value in the table, to encrypt String			
 			
-
+			
+			encryptedText += letter1 + letter2;
 			
 
 		}
@@ -130,7 +133,7 @@ public class PlayFair{
 	
 	//Filter plaintext to make sure that consecutive letters don't repeat
 	// If so replace with a random letter
-	private String proccessPlainText(){
+	private void proccessPlainText(){
 		int idxDup = indexOfFirstDuplicateLetter(plaintext, pTextLength,  0);
 		
 		while( idxDup != -1){
@@ -142,9 +145,13 @@ public class PlayFair{
 			//Look for next duplic
 			idxDup = indexOfFirstDuplicateLetter(plaintext, pTextLength, idxDup);
 
-			
 		}
-		return plaintext;
+
+		plaintext = plaintext.toUpperCase().replace(" ", "");
+		pTextLength = plaintext.length();
+		System.out.println("Plaintext :" + this.plaintext + "\n\n");
+		
+
 	}
 
 	
@@ -266,7 +273,7 @@ public class PlayFair{
 			return false;
 
 		this.plaintext = plaintext;
-		pTextLength = plaintext.length();
+		
 		
 		return true;
 	}
@@ -277,6 +284,10 @@ public class PlayFair{
 
 	public String getPlaintext(){
 		return this.plaintext;
+	}
+
+	public String getEncryptedText(){
+		return  encryptedText;
 	}
 
 //--------- General Methods ---------------------

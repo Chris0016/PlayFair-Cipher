@@ -2,8 +2,8 @@
 public class MainOne{
 
 	public static void main(String[] args){
-		String plaintext = "SECRETMESSAGE";
-		String key = "KEYWORD";
+		String plaintext = "HELLO nun";
+		String key = "PLAYFIR";
 		/*
 		//Create Table
 		String[][] table = new String[5][5];
@@ -29,6 +29,7 @@ public class MainOne{
 
 		PlayFair algo = new PlayFair(plaintext, key);
 		algo.encrypt();
+		System.out.println("Encrypted Text: " + algo.getEncryptedText());
 
 
 
