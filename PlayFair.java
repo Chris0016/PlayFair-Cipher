@@ -1,71 +1,57 @@
+/**
+*@author Christopher Perez
+*@version 1.0.0
+* 11/21/2021
+*/
 import java.util.regex.*;  
 import java.lang.IllegalArgumentException;
 
 public class PlayFair{
 
 	//Note the table for encryption is a 5x5 table. However it the possibility remains that it can be changed.
+	// LENGTH * WIDTH = 25
 	final int LENGTH = 5;
 	final int WIDTH  = 5;
 
 	private String plaintext;
 	private String encryptedText;
 	private String key;
-	private String alphabet;
+	//private String alphabet; Maybe useful in decryption?
 	private String[][] table;
 	
 	private int kLength;
 	private int pTextLength;
 	
 	public PlayFair(String plaintext, String key) throws IllegalArgumentException{
-		if (!isValidKey(key, key.length()) )
-			throw new IllegalArgumentException("Invalid Key: Non-distinct Letters");
-		else if(!isValidPlaintext(plaintext) )
-			throw new IllegalArgumentException("Invalid plaintext: Contains letter J");
 		
-
-		this.plaintext = plaintext;
-		this.key = key;
-
-		pTextLength = plaintext.length();
-		kLength = key.length();
-
-		alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		this.setKey(key);
+		this.setPlaintext(plaintext);	
 
 		table = new String[LENGTH][WIDTH];
 		createTable();
 	}
 
-	public void encrypt(){		
-		encryptedText = "";
 
+	public void encrypt(){	
 
-		char char1, char2;
+		//encryptedText = ""; Safety Precaution
+
+		String  pairPart1, pairPart2;
 		Coordinates a, b, c, d; 
 		int x1, x2, y1, y2;
-		int bPos, cPos;
-		String letter1, letter2;
+		//String letter1, letter2;
 
-		proccessPlainText();
-		makeEvenLength();
 		
 		System.out.println(plaintext);
 
 		for(int i = 0; i < pTextLength - 1; i+=2){
-			char1 = plaintext.charAt(i);
-			char2 = plaintext.charAt(i + 1);
+			pairPart1 = plaintext.substring(i, i + 1);
+			pairPart2 = plaintext.substring(i + 1, i + 2);
 
-			a = toCoordinates(char1);
-			d = toCoordinates(char2);
+			a = getCoordinates(pairPart1);
+			d = getCoordinates(pairPart2);
 
 			
-			/*
-			System.out.println("\nCoordinates for " + char1 + ": ");
-			System.out.println("A: " + a.getX() + ", "+ a.getY());
-
-			System.out.println("\nCoordinates for " + char2 + ": ");
-			System.out.println("D: " + d.getX() + ", "+ d.getY());
-			*/
-
 			x1 = a.getX();
 			y1 = a.getY();
 
@@ -92,31 +78,29 @@ public class PlayFair{
 				c = new Coordinates(x1, y2);
 			}
 			
-			
-			
-			//Calculate the position of b and c based on their respective coordinates
 
+			/*
+			For Debugging purposes
 			letter1 = table[b.getY()][b.getX()];
 			letter2 = table[c.getY()][c.getX()];
 
 			System.out.println("Letter at B : " + letter1 );
 			System.out.println("Coordinates of B : " + "(" + b.getX() + ", " + b.getY() + ")");
 
-			System.out.println("Letter at C: " + letter2);
+			System.out.println("Letter at C: " + letter2);	
 			System.out.println("Coordinates of C : " + "(" + c.getX() + ", " + c.getY() + ")" + "\n\n");
 			//append letters, based on their pos value in the table, to encrypt String			
 			
 			
 			encryptedText += letter1 + letter2;
-			
+			*/
+
+			encryptedText += table[b.getY()][b.getX()] +  table[c.getY()][c.getX()];
 
 		}
-	
-
 	}
 	
 
-	
 	//Odd number of letters add a Z(or A) to the
 	private void makeEvenLength(){
 		
@@ -134,6 +118,7 @@ public class PlayFair{
 	//Filter plaintext to make sure that consecutive letters don't repeat
 	// If so replace with a random letter
 	private void proccessPlainText(){
+
 		int idxDup = indexOfFirstDuplicateLetter(plaintext, pTextLength,  0);
 		
 		while( idxDup != -1){
@@ -147,16 +132,12 @@ public class PlayFair{
 
 		}
 
-		plaintext = plaintext.toUpperCase().replace(" ", "");
+		this.plaintext = plaintext.toUpperCase().replace(" ", "");
 		pTextLength = plaintext.length();
-		System.out.println("Plaintext :" + this.plaintext + "\n\n");
-		
-
 	}
 
 	
 	public Boolean isValidKey(String key, int kLength){
-
 		return (indexOfFirstDuplicateLetter(key, kLength,  0) == -1);
 	}
 
@@ -164,13 +145,7 @@ public class PlayFair{
 		return !(plaintext.contains("J"));
 	}
 
-
-
 	private int indexOfFirstDuplicateLetter(String plaintext, int size, int start){
-		/*
-		if (start >= size)
-			//Throw an error
-		*/
 
 		if ( !isEven(size)  )
 			plaintext += "0";
@@ -188,54 +163,14 @@ public class PlayFair{
 	}
 
 
-	//To Delete
-	private int coordToPos(Coordinates coordinate){
-		return (WIDTH * (coordinate.getY() - 1)) + coordinate.getX();
-
-	}
-	
-
-
-	//To Delete
-	/*
-	private Coordinates toCoordinates(char letter){
-		int pos = letter - 64; 
-
-		pos = (pos >= 10)? (pos - 1) : pos; //No J in PlayFair so Shift letters over one spot to the left
-		
-		int x = pos - floor(pos, WIDTH);
-		x = (x == 0)? WIDTH : x;
-
-		int y = ceiling(pos, WIDTH);
-		y = (y % 5 == 0 && y > WIDTH)? y/5 : y;
-
-		return new Coordinates(x, y);	
-	}
-	*/
-
-
-	private Coordinates toCoordinates(char letter){
+	private Coordinates getCoordinates(String letter){
 		
 		for(int y = 0; y <  LENGTH; y++)
 			for(int x = 0; x < WIDTH; x++)
-				if(table[y][x].equals(Character.toString(letter)))
+				if(table[y][x].equals(letter))
 					return new Coordinates(x, y);
+
 		return new Coordinates(-1, -1);
-	}
-
-	//A custom ceiling and floor function based on a given "floor/ceiling" the stepNum
-	// e.g. ceiling(3, 5) -> 5  ceiling(32, 5)  -> 35 
-	// e.g. floor(3, 5) -> 0 	floor(32, 5) 	-> 30
-	private int ceiling(int num, int stepNum){
-		if (num <= 5)
-			return 1;
-		int holder = ((int)(num/stepNum));
-		return (num % stepNum == 0 && num >= stepNum)? holder : ((holder) + 1 ) * 5;
-		 
-	}
-
-	private int floor(int num, int stepNum){
-		return ((int)(num/stepNum)) * 5;
 	}
 
 	
@@ -249,10 +184,17 @@ public class PlayFair{
 	}
 
 	private void populateTable(String text){
+		/*
+		if (tex.length() != LENGTH * WIDTH) //LENGTH * WIDTH == 25
+			throw new IllegalArgumentException("Text Length Does Not Match LENGTH * WIDTH");
+		This exveption should never happen because the string passed to it is only seen in createTable()
+
+		*/
+
 		int count = 0;
 		for(int i = 0; i < LENGTH; i++)
 			for (int j = 0; j < WIDTH; j++){
-				this.table[i][j] = Character.toString(text.charAt(count));
+				this.table[i][j] = text.substring(count, count + 1);
 				count++;
 			}
 	}
@@ -260,22 +202,26 @@ public class PlayFair{
 
 //--------- Setters and Getters ---------------------
 
-	public boolean setKey(String key){
-		if(!isValidKey(key, key.length()))
-			return false;
-		this.key = key;
+	public void setKey(String key){
+		if (!isValidKey(key, key.length()) )
+			throw new IllegalArgumentException("Invalid Key: Non-distinct Letters");
+		
+		this.key = key.toUpperCase().trim();
 		kLength = key.length();
-		return true;
+		
+
 	}
 
-	public boolean setPlaintext(String plaintext){
-		if(!isValidPlaintext(plaintext))
-			return false;
+	public void setPlaintext(String plaintext){
+		if(!isValidPlaintext(plaintext) )
+			throw new IllegalArgumentException("Invalid plaintext: Contains letter J");
 
 		this.plaintext = plaintext;
-		
-		
-		return true;
+		pTextLength = plaintext.length();
+
+		proccessPlainText();
+		makeEvenLength();
+		encryptedText = "";
 	}
 
 	public String getKey(){
@@ -287,25 +233,22 @@ public class PlayFair{
 	}
 
 	public String getEncryptedText(){
-		return  encryptedText;
+		return  this.encryptedText;
 	}
 
 //--------- General Methods ---------------------
-
-	
 
 	private boolean isEven(int num){
 		return (num % 2 == 0 && num != 1);
 	
 	}
 
-	private <E> void  printArray(E[] arr){
-		for(E i : arr)
+	private <E> void  print2DArray(E[][] arr){
+		for(E[] subArr : arr)
+			for(E i : subArr )
 			System.out.print(i + " ");
 		System.out.println();
 	}
-
-
 
 
 	class Coordinates{
@@ -329,8 +272,5 @@ public class PlayFair{
 		void setY(int y){
 			this.y = y;
 		}
-
-		
 	}
-
 }
