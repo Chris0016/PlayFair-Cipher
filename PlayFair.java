@@ -1,6 +1,6 @@
 /**
 *@author Christopher Perez
-*@version 1.0.0
+*@version 1.0.1
 * 11/21/2021
 */
 import java.util.regex.*;  
@@ -22,36 +22,37 @@ public class PlayFair{
 	private int kLength;
 	private int pTextLength;
 	
-	public PlayFair(String plaintext, String key) throws IllegalArgumentException{
-		
-		this.setKey(key);
-		this.setPlaintext(plaintext);	
-
+	
+	private void setTable() {
+	
 		table = new String[LENGTH][WIDTH];
 		createTable();
+	
 	}
 
+	public String encrypt(String pText, String key)   throws IllegalArgumentException{	
+		
+		this.setKey(key);
+		this.setPlaintext(pText);	
+		
+		setTable();
+		
+		encryptedText = ""; 
 
-	public void encrypt(){	
-
-		//encryptedText = ""; Safety Precaution
-
+		
 		String  pairPart1, pairPart2;
 		Coordinates a, b, c, d; 
 		int x1, x2, y1, y2;
 		//String letter1, letter2;
 
-		
-		System.out.println(plaintext);
 
 		for(int i = 0; i < pTextLength - 1; i+=2){
 			pairPart1 = plaintext.substring(i, i + 1);
-			pairPart2 = plaintext.substring(i + 1, i + 2);
-
+			pairPart2 = plaintext.substring(i + 1, i + 2);			
+			
 			a = getCoordinates(pairPart1);
 			d = getCoordinates(pairPart2);
 
-			
 			x1 = a.getX();
 			y1 = a.getY();
 
@@ -76,28 +77,30 @@ public class PlayFair{
 
 				b = new Coordinates(x2, y1);
 				c = new Coordinates(x1, y2);
-			}
-			
+			}	
 
 			/*
-			For Debugging purposes
-			letter1 = table[b.getY()][b.getX()];
-			letter2 = table[c.getY()][c.getX()];
+			//For Debugging purposes
+			//letter1 = table[b.getY()][b.getX()];
+			//letter2 = table[c.getY()][c.getX()];
 
-			System.out.println("Letter at B : " + letter1 );
+			//System.out.println("Letter at B : " + letter1 );
 			System.out.println("Coordinates of B : " + "(" + b.getX() + ", " + b.getY() + ")");
 
-			System.out.println("Letter at C: " + letter2);	
+			//System.out.println("Letter at C: " + letter2);	
 			System.out.println("Coordinates of C : " + "(" + c.getX() + ", " + c.getY() + ")" + "\n\n");
 			//append letters, based on their pos value in the table, to encrypt String			
+			System.out.println();
 			
+			//encryptedText += letter1 + letter2;
 			
-			encryptedText += letter1 + letter2;
 			*/
-
+			
 			encryptedText += table[b.getY()][b.getX()] +  table[c.getY()][c.getX()];
 
 		}
+		
+		return encryptedText;
 	}
 	
 
@@ -187,7 +190,7 @@ public class PlayFair{
 		/*
 		if (tex.length() != LENGTH * WIDTH) //LENGTH * WIDTH == 25
 			throw new IllegalArgumentException("Text Length Does Not Match LENGTH * WIDTH");
-		This exveption should never happen because the string passed to it is only seen in createTable()
+		This exception should never happen because the string passed to it is only seen in createTable()
 
 		*/
 
@@ -207,7 +210,7 @@ public class PlayFair{
 			throw new IllegalArgumentException("Invalid Key: Non-distinct Letters");
 		
 		this.key = key.toUpperCase().trim();
-		kLength = key.length();
+		kLength = this.key.length();
 		
 
 	}
@@ -216,12 +219,13 @@ public class PlayFair{
 		if(!isValidPlaintext(plaintext) )
 			throw new IllegalArgumentException("Invalid plaintext: Contains letter J");
 
-		this.plaintext = plaintext;
-		pTextLength = plaintext.length();
+		this.plaintext = plaintext.toUpperCase();
+		pTextLength = this.plaintext.length();
 
 		proccessPlainText();
 		makeEvenLength();
 		encryptedText = "";
+		
 	}
 
 	public String getKey(){

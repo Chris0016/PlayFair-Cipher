@@ -1,16 +1,16 @@
 /**
 *@author Christopher Perez
-*@version 1.0.0
+*@version 1.0.1
 * 11/21/2021
 */
-public class MainOne{
+public class Main{
 
 	public static void main(String[] args){
 		String plaintext = "SECRETMESSAGE";
 		String key = "KEYWORD";
 		
-		PlayFair algo = new PlayFair(plaintext, key);
-		algo.encrypt();
+		PlayFair algo = new PlayFair();
+		algo.encrypt(plaintext, key);
 		System.out.println("Encrypted Text: " + algo.getEncryptedText());
 
 	}
